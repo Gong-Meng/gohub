@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gongmeng/gohub/app/models/user"
 	"github.com/gongmeng/gohub/pkg/config"
 	"github.com/gongmeng/gohub/pkg/database"
 	"gorm.io/driver/mysql"
@@ -50,4 +51,7 @@ func SetupDB() {
 	database.SQLDB.SetMaxIdleConns(config.GetInt("database.mysql.max_idle_connections"))
 	// 设置连接的过期时间
 	database.SQLDB.SetConnMaxLifetime(time.Duration(config.GetInt("database.mysql.max_life_seconds")) * time.Second)
+
+	// 自动迁移
+	database.DB.AutoMigrate(&user.User{})
 }
