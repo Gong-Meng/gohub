@@ -24,11 +24,14 @@ func main() {
 
 	config.InitConfig(env)
 
-	// 初始化数据库
-	bootstrap.SetupDB()
+	// 初始化 Logger
+	bootstrap.SetupLogger()
 
 	// 初始化gin
 	router := gin.New()
+
+	// 初始化数据库
+	bootstrap.SetupDB()
 
 	// 绑定路由
 	bootstrap.SetupRoute(router)
