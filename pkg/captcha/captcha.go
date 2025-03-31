@@ -36,7 +36,7 @@ func NewCaptcha() *Captcha {
 		driver := base64Captcha.NewDriverDigit(
 			config.GetInt("captcha.height"),      // 图片高度
 			config.GetInt("captcha.width"),       // 图片宽度
-			config.GetInt("captcha.lenth"),       // 长度
+			config.GetInt("captcha.length"),      // 长度
 			config.GetFloat64("captcha.maxskew"), // 最大倾斜度
 			config.GetInt("captcha.dotcount"),    // 噪点数量
 		)
