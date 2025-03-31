@@ -1,12 +1,11 @@
 package auth
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	v1 "github.com/gongmeng/gohub/app/http/controllers/api/v1"
 	"github.com/gongmeng/gohub/pkg/captcha"
 	"github.com/gongmeng/gohub/pkg/logger"
+	"github.com/gongmeng/gohub/pkg/response"
 )
 
 // VerifyCodeController 用户控制器
@@ -22,7 +21,7 @@ func (vc *VerifyCodeController) ShowCaptcha(c *gin.Context) {
 	logger.LogIf(err)
 
 	// 返回给用户
-	c.JSON(http.StatusOK, gin.H{
+	response.JSON(c, gin.H{
 		"captcha_id":    id,
 		"captcha_image": b64s,
 	})
