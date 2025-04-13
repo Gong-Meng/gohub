@@ -62,6 +62,39 @@ func (vc *VerifyCode) SendSMS(phone string) (string, bool) {
 	return code, result
 }
 
+// SendEmail 发送邮件验证码，调用示例：
+//
+//	verifycode.NewVerifyCode().SendEmail(request.Email)
+func (vc *VerifyCode) SendEmail(email string) (string, bool) {
+
+	// 生成验证码
+	code := vc.generateVerifyCode(email)
+
+	// 方便本地和 API 自动测试
+	if !app.IsProduction() && strings.HasSuffix(email, config.GetString("verifycode.debug_email_suffix")) {
+		return code, true
+	}
+
+	content := fmt.Sprintf("<h1>您的 Email 验证码是 %v </h1>", code)
+	// 发送邮件
+	result := mail.NewMailer().Send(mail.Email{
+		From: mail.From{
+			Address: config.GetString("mail.from.address"),
+			Name:    config.GetString("mail.from.name"),
+		},
+		To:      []string{email},
+		Subject: "Email 验证码",
+		HTML:    []byte(content),
+	})
+
+	// 在生产环境中，不返回验证码，只返回发送状态
+	if app.IsProduction() {
+		return "", result
+	}
+
+	return code, result
+}
+
 // CheckAnswer 检查用户提交的验证码是否正确，key 可以是手机号或者 Email
 func (vc *VerifyCode) CheckAnswer(key string, answer string) bool {
 
@@ -92,32 +125,4 @@ func (vc *VerifyCode) generateVerifyCode(key string) string {
 	// 将验证码及 KEY（邮箱或手机号）存放到 Redis 中并设置过期时间
 	vc.Store.Set(key, code)
 	return code
-}
-
-// SendEmail 发送邮件验证码，调用示例：
-//
-//	verifycode.NewVerifyCode().SendEmail(request.Email)
-func (vc *VerifyCode) SendEmail(email string) error {
-
-	// 生成验证码
-	code := vc.generateVerifyCode(email)
-
-	// 方便本地和 API 自动测试
-	if !app.IsProduction() && strings.HasSuffix(email, config.GetString("verifycode.debug_email_suffix")) {
-		return nil
-	}
-
-	content := fmt.Sprintf("<h1>您的 Email 验证码是 %v </h1>", code)
-	// 发送邮件
-	mail.NewMailer().Send(mail.Email{
-		From: mail.From{
-			Address: config.GetString("mail.from.address"),
-			Name:    config.GetString("mail.from.name"),
-		},
-		To:      []string{email},
-		Subject: "Email 验证码",
-		HTML:    []byte(content),
-	})
-
-	return nil
 }
