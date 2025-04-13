@@ -1,57 +1,53 @@
 package sms
 
-import (
-	"encoding/json"
-
-	aliyunsmsclient "github.com/KenmyZhang/aliyun-communicate"
-	"github.com/gongmeng/gohub/pkg/logger"
-)
-
 // Aliyun 实现 sms.Driver interface
 type Aliyun struct{}
 
 // Send 实现 sms.Driver interface 的 Send 方法
 func (s *Aliyun) Send(phone string, message Message, config map[string]string) bool {
 
-	smsClient := aliyunsmsclient.New("http://dysmsapi.aliyuncs.com/")
+	//todo 扩展存在问题，后续使用阿里云官方扩展接入
+	return true
 
-	templateParam, err := json.Marshal(message.Data)
-	if err != nil {
-		logger.ErrorString("短信[阿里云]", "解析绑定错误", err.Error())
-		return false
-	}
+	// smsClient := aliyunsmsclient.New("http://dysmsapi.aliyuncs.com/")
 
-	logger.DebugJSON("短信[阿里云]", "配置信息", config)
+	// templateParam, err := json.Marshal(message.Data)
+	// if err != nil {
+	// 	logger.ErrorString("短信[阿里云]", "解析绑定错误", err.Error())
+	// 	return false
+	// }
 
-	result, err := smsClient.Execute(
-		config["access_key_id"],
-		config["access_key_secret"],
-		phone,
-		config["sign_name"],
-		message.Template,
-		string(templateParam),
-	)
+	// logger.DebugJSON("短信[阿里云]", "配置信息", config)
 
-	logger.DebugJSON("短信[阿里云]", "请求内容", smsClient.Request)
-	logger.DebugJSON("短信[阿里云]", "接口响应", result)
+	// result, err := smsClient.Execute(
+	// 	config["access_key_id"],
+	// 	config["access_key_secret"],
+	// 	phone,
+	// 	config["sign_name"],
+	// 	message.Template,
+	// 	string(templateParam),
+	// )
 
-	if err != nil {
-		logger.ErrorString("短信[阿里云]", "发信失败", err.Error())
-		return false
-	}
+	// logger.DebugJSON("短信[阿里云]", "请求内容", smsClient.Request)
+	// logger.DebugJSON("短信[阿里云]", "接口响应", result)
 
-	resultJSON, err := json.Marshal(result)
-	if err != nil {
-		logger.ErrorString("短信[阿里云]", "解析响应 JSON 错误", err.Error())
-		return false
-	}
+	// if err != nil {
+	// 	logger.ErrorString("短信[阿里云]", "发信失败", err.Error())
+	// 	return false
+	// }
 
-	if result.IsSuccessful() {
-		logger.DebugString("短信[阿里云]", "发信成功", "")
-		return true
-	} else {
-		logger.DebugString("短信[阿里云]", "服务商返回错误", string(resultJSON))
-		return false
-	}
+	// resultJSON, err := json.Marshal(result)
+	// if err != nil {
+	// 	logger.ErrorString("短信[阿里云]", "解析响应 JSON 错误", err.Error())
+	// 	return false
+	// }
+
+	// if result.IsSuccessful() {
+	// 	logger.DebugString("短信[阿里云]", "发信成功", "")
+	// 	return true
+	// } else {
+	// 	logger.DebugString("短信[阿里云]", "服务商返回错误", string(resultJSON))
+	// 	return false
+	// }
 
 }

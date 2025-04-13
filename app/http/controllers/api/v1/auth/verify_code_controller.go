@@ -39,9 +39,9 @@ func (vc *VerifyCodeController) SendUsingPhone(c *gin.Context) {
 	}
 
 	// 2. 发送 SMS
-	if ok := verifycode.NewVerifyCode().SendSMS(request.Phone); !ok {
+	if code, ok := verifycode.NewVerifyCode().SendSMS(request.Phone); !ok {
 		response.Abort500(c, "发送短信失败~")
 	} else {
-		response.Success(c)
+		response.Data(c, gin.H{"code": code})
 	}
 }

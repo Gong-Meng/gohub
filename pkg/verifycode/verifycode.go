@@ -36,21 +36,28 @@ func NewVerifyCode() *VerifyCode {
 
 // SendSMS 发送短信验证码，调用示例：
 // verifycode.NewVerifyCode().SendSMS(request.Phone)
-func (vc *VerifyCode) SendSMS(phone string) bool {
+func (vc *VerifyCode) SendSMS(phone string) (string, bool) {
 
 	// 生成验证码
 	code := vc.generateVerifyCode(phone)
 
 	// 方便本地和 API 自动测试
 	if !app.IsProduction() && strings.HasPrefix(phone, config.GetString("verifycode.debug_phone_prefix")) {
-		return true
+		return code, true
 	}
 
 	// 发送短信
-	return sms.NewSMS().Send(phone, sms.Message{
+	result := sms.NewSMS().Send(phone, sms.Message{
 		Template: config.GetString("sms.aliyun.template_code"),
 		Data:     map[string]string{"code": code},
 	})
+
+	// 在生产环境中，不返回验证码，只返回发送状态
+	if app.IsProduction() {
+		return "", result
+	}
+
+	return code, result
 }
 
 // CheckAnswer 检查用户提交的验证码是否正确，key 可以是手机号或者 Email
